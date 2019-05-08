@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://code.createjs.com/1.0.0/easeljs.min.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			function Rect(n,color,RectColor){
+				createjs.Shape.call(this);
+				this.setRectType = function(type){
+					this._RectType = type;
+					switch (type){
+						case 1:
+						this.setColor(color);
+							break;
+						default:
+						this.setColor(RectColor);
+							break;
+					}
+				}
+				this.setColor = function(colorString){
+					this.graphics.beginFill(colorString);
+					this.graphics.drawRect(0,0,400/n-5,400/n-5);
+					this.graphics.endFill();
+				}
+				this.getRectType = function(){
+					return this._RectType;
+				}
+				this.setRectType(1);
+			}
+			Rect.prototype = new createjs.Shape();
+		</script>
+	</head>
+	<body>
+		<canvas width="400px" height="400px" id="gameView"></canvas>
+		<script>
+			var stage = new createjs.Stage("gameView");
+			var gameView = new createjs.Container();
+			stage.addChild(gameView);
+			createjs.Ticker.setFPS(30);
+			createjs.Ticker.addEventListener("tick",stage);
+			
+			var n=2;
+			function addRect(){
+				var tmpValue = parseInt(100/n);
+				var cl = parseInt(Math.random()*1000000);
+				var rl = parseInt(cl%97)*10000+(parseInt(cl%66)+tmpValue)*100+parseInt(cl%33)+tmpValue;
+				var color = "#"+cl;
+				var rectColor = "#"+rl;
+				var x = parseInt(Math.random()*n);
+				var y = parseInt(Math.random()*n);
+				for(var indexX = 0;indexX<n; indexX++){
+					for(var indexY = 0;indexY<n;indexY++) {
+						var r = new Rect(n,color,rectColor);
+						gameView.addChild(r);
+						r.x = indexX;
+						r.y = indexY;
+						if (r.x==x && r.y==y) {
+							r.setRectType(2);
+						}
+						r.x = indexX*(400/n);
+						r.y = indexY*(400/n);
+						if (r.getRectType() == 2) {
+							r.addEventListener("click",function(){
+								if (n<10) {
+									++n;
+								}
+								gameView.removeAllChildren();
+								addRect();
+							})
+						}
+					}
+				}
+			}
+			addRect();
+		</script>
+	</body>
+</html>
